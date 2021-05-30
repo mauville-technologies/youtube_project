@@ -1,0 +1,3 @@
+[submodule "external/engine"]
+	path = external/engine
+	url = git@github.com:mauville-technologies/youtube-engine.git
