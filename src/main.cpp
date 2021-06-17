@@ -1,6 +1,8 @@
 #include <youtube_engine/platform/entry_point.h>
 #include <youtube_engine/platform/game.h>
 
+using namespace OZZ;
+
 class YoutubeGame : public Game {
 public:
     explicit YoutubeGame(std::string title) : Game(std::move(title)) {
@@ -14,7 +16,7 @@ protected:
 };
 
 // Runtime
-Game* CreateGame() {
+Game* OZZ::CreateGame() {
     return new YoutubeGame("Youtube Game");
 }
 
