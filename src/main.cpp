@@ -1,5 +1,4 @@
 #include <youtube_engine/platform/entry_point.h>
-#include <youtube_engine/platform/game.h>
 
 using namespace OZZ;
 
@@ -65,7 +64,6 @@ public:
                    return true;
                }
             });
-
         }
     }
 
