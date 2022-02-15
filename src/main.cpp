@@ -37,12 +37,14 @@ public:
 
             _inputManager->RegisterActionCallback("strafe", InputManager::ActionCallback {
                 .Ref = "YoutubeGame",
-                .Func = [](InputSource source, int sourceIndex, float value) {
+                .Func = [this](InputSource source, int sourceIndex, float value) {
                     std::string direction {"NONE"};
 
                     if (value > 0.f) direction = "RIGHT";
                     if (value < 0.f) direction = "LEFT";
                     std::cout << "STRAFING " << direction << "\n";
+
+                    _triangleTexture1->UploadData(ImageData(50, 50, {1.f, 0.f, 1.f, 1.f}));
                     return true;
                 }
             });
@@ -211,6 +213,8 @@ public:
         _triangleTexture2->UploadData(ImageData("textures/texture.jpg", true));
 
         _triangleShader->AddTexture(_triangleTexture1);
+        _triangleShader->AddTexture(_triangleTexture2);
+        _triangleShader2->AddTexture(_triangleTexture1);
         _triangleShader2->AddTexture(_triangleTexture2);
     }
 
