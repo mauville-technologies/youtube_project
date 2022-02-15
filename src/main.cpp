@@ -121,9 +121,21 @@ public:
     void SetupScene() {
         auto renderer = ServiceLocator::GetRenderer();
 
+        _triangleTexture1 = renderer->CreateTexture();
+        _triangleTexture2 = renderer->CreateTexture();
+        _triangleTexture1->UploadData(ImageData("textures/bricks.png", true));
+        _triangleTexture2->UploadData(ImageData("textures/texture.jpg", true));
+
         _triangleShader = renderer->CreateShader();
-        _triangleShader->Load("basic.vert.spv", "basic.frag.spv");
         _triangleShader2 =  renderer->CreateShader();
+
+        _triangleShader->AddTexture(_triangleTexture2);
+        _triangleShader->AddTexture(_triangleTexture1);
+
+        _triangleShader2->AddTexture(_triangleTexture1);
+        _triangleShader2->AddTexture(_triangleTexture2);
+
+        _triangleShader->Load("basic.vert.spv", "basic.frag.spv");
         _triangleShader2->Load("basic.vert.spv", "basic.frag.spv");
 
         _triangleBuffer = renderer->CreateVertexBuffer();
@@ -182,8 +194,8 @@ public:
         auto [width, height] = ServiceLocator::GetWindow()->GetWindowExtents();
 
         UniformBufferObject uboObject{
-                glm::rotate(glm::mat4(1.0f), 1.f * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+                glm::rotate(glm::mat4(1.0f), 1.f * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
+                glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
                 glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 10.0f)
         };
 
@@ -195,10 +207,11 @@ public:
 
         auto buffer = renderer->CreateUniformBuffer();
 
+        auto translation = glm::translate(glm::mat4{1.f}, glm::vec3 {0.0, -1, -5});
         UniformBufferObject uboObject2{
-                glm::rotate(glm::mat4(1.0f), 1.f * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 10.0f)
+                glm::rotate(translation, 1.f * glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+                glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+                glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 999.0f)
         };
 
         uboObject2.proj[1][1] *= -1;
@@ -206,16 +219,9 @@ public:
         buffer->UploadData(uboObject2);
         _triangleShader2->AddUniformBuffer(buffer);
 
-        _triangleTexture1 = renderer->CreateTexture();
-        _triangleTexture1->UploadData(ImageData("textures/bricks.png", true));
 
-        _triangleTexture2 = renderer->CreateTexture();
-        _triangleTexture2->UploadData(ImageData("textures/texture.jpg", true));
 
-        _triangleShader->AddTexture(_triangleTexture1);
-        _triangleShader->AddTexture(_triangleTexture2);
-        _triangleShader2->AddTexture(_triangleTexture1);
-        _triangleShader2->AddTexture(_triangleTexture2);
+
     }
 
 protected:
@@ -228,9 +234,9 @@ protected:
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
         UniformBufferObject uboObject{
-                glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
-                glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 10.0f)
+                glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 1.0f)),
+                glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+                glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 999.0f)
         };
 
         uboObject.proj[1][1] *= -1;
@@ -241,16 +247,16 @@ protected:
     void Render() override {
         auto renderer = ServiceLocator::GetRenderer();
 
-        _triangleShader->Bind(0);
+        _triangleShader->Bind();
 
-        _triangle2Buffer->Bind(0);
-        _triangle2IndexBuffer->Bind(0);
+        _triangle2Buffer->Bind();
+        _triangle2IndexBuffer->Bind();
 
         renderer->DrawIndexBuffer(_triangle2IndexBuffer.get());
-        _triangleShader2->Bind(0);
+        _triangleShader2->Bind();
 
-        _triangleBuffer->Bind(0);
-        _triangleIndexBuffer->Bind(0);
+        _triangleBuffer->Bind();
+        _triangleIndexBuffer->Bind();
         renderer->DrawIndexBuffer(_triangleIndexBuffer.get());
     }
 
