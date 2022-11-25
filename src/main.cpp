@@ -1,7 +1,10 @@
 #include <youtube_engine/platform/entry_point.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include <youtube_engine/core/entity.h>
+#include <youtube_engine/core/components/mesh_component.h>
+#include <youtube_engine/core/components/transform_component.h>
 
 using namespace OZZ;
 
@@ -45,14 +48,6 @@ public:
 //                    if (value > 0.f) direction = "RIGHT";
 //                    if (value < 0.f) direction = "LEFT";
 //                    std::cout << "STRAFING " << direction << "\n";
-
-
-
-                    for (auto* ent : entities) {
-                        GetScene()->RemoveEntity(ent);
-                    }
-                    entities.clear();
-
                     return true;
                 }
             });
@@ -105,99 +100,28 @@ public:
         _mesh.reset();
     }
     void SetupScene() {
-//        ServiceLocator::GetResourceManager()->Load<Material>("materials/default_material.mat");
-
-//        for (auto i : {1, 2, 3, 4, 5}) {
-//            entities.push_back(GetScene()->CreateEntity());
-//        }
-//
-        auto renderer = ServiceLocator::GetRenderer();
-
-//        _triangleTexture1 = renderer->CreateTexture();
-//        _triangleTexture2 = renderer->CreateTexture();
-//        _triangleTexture1->UploadData(ImageData("textures/bricks.png", true));
-//        _triangleTexture2->UploadData(ImageData(50, 50, {1.f, 0.f, 0.f, 1.f}));
-
-        _triangleShader = renderer->CreateShader();
-//        _triangleShader2 =  renderer->CreateShader();
-
-//        _triangleShader->AddTexture(_triangleTexture2);
-//        _triangleShader->AddTexture(_triangleTexture1);
-//
-//        _triangleShader2->AddTexture(_triangleTexture1);
-//        _triangleShader2->AddTexture(_triangleTexture2);
-
-        _triangleShader->Load((Filesystem::GetShaderPath() / "basic.vert.spv").string(), (Filesystem::GetShaderPath() / "basic.frag.spv").string());
-//        _triangleShader2->Load((Filesystem::GetShaderPath() / "basic.vert.spv").string(), (Filesystem::GetShaderPath() / "basic.frag.spv").string());
+        for (auto i : {1, 2, 3, 4, 5}) {
+            entities.push_back(GetScene()->CreateEntity());
+        }
 
 
-        _mesh = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCube/DiffuseOnly/BasicCube.fbx");
+        auto mesh = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCube/DiffuseOnly/BasicCube.glb");
+        entities[0]->AddComponent<MeshComponent>(std::move(mesh));
+        auto& transform = entities[0]->AddComponent<TransformComponent>();
+//        transform._rotation = glm::rotate(transform._rotation, glm::vec3{0.f, 45.f, 0.0f});
 
-        _triangleUniformBuffer = renderer->CreateUniformBuffer();
-
-        auto [width, height] = ServiceLocator::GetWindow()->GetWindowExtents();
-
-        UniformBufferObject uboObject{
-                glm::rotate(glm::mat4(1.0f), 1.f * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
-                glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 10.0f)
-        };
-
-        uboObject.proj[1][1] *= -1;
-
-        _triangleUniformBuffer->UploadData(uboObject);
-
-        _triangleShader->AddUniformBuffer(_triangleUniformBuffer);
-
-        auto buffer = renderer->CreateUniformBuffer();
-
-        auto translation = glm::translate(glm::mat4{1.f}, glm::vec3 {0.0, -1, -5});
-        UniformBufferObject uboObject2{
-                glm::rotate(translation, 1.f * glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
-                glm::perspective(glm::radians(45.0f), width / (float) height, 0.1f, 999.0f)
-        };
-
-        uboObject2.proj[1][1] *= -1;
-
-        buffer->UploadData(uboObject2);
     }
 
 protected:
     void Update(float deltaTime) override {
-        auto [width, height] = ServiceLocator::GetWindow()->GetWindowExtents();
+        auto& transform = entities[0]->GetComponent<TransformComponent>();
+        static float i = 0.01f;
 
-        if (width == 0 || height == 0) return;
+        i += 0.01f;
 
-        static auto startTime = std::chrono::high_resolution_clock::now();
-
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-        UniformBufferObject uboObject{
-                glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 1.0f)),
-                glm::lookAt(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
-                glm::perspective(glm::radians(45.0f), (float)width / (float) height, 0.1f, 999.0f)
-        };
-
-        uboObject.proj[1][1] *= -1;
-
-        _triangleUniformBuffer->UploadData(uboObject);
-    }
-
-    void Render() override {
-        auto renderer = ServiceLocator::GetRenderer();
-
-        if (_mesh) {
-            _triangleShader->Bind();
-
-            for (const auto& tMesh: _mesh->_submeshes) {
-                tMesh._vertexBuffer->Bind();
-                tMesh._indexBuffer->Bind();
-
-                renderer->DrawIndexBuffer(tMesh._indexBuffer.get());
-            }
-        }
+        if (i > 360.f) i = 0.0f;
+        glm::quat rotation = glm::quat(glm::vec3(0, 0.01, 0.0));
+        transform._rotation = transform._rotation * rotation;
     }
 
 private:
