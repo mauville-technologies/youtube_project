@@ -78,27 +78,8 @@ public:
 
     void OnExit() override {
 
-        if (_triangleShader) {
-            _triangleShader.reset();
-            _triangleShader = nullptr;
-        }
-
-        if (_triangleUniformBuffer) {
-            _triangleUniformBuffer.reset();
-            _triangleUniformBuffer = nullptr;
-        }
-
-        if (_triangleTexture1) {
-            _triangleTexture1.reset();
-            _triangleTexture1 = nullptr;
-        }
-        if (_triangleTexture2) {
-            _triangleTexture2.reset();
-            _triangleTexture2 = nullptr;
-        }
-
-        _mesh.reset();
     }
+
     void SetupScene() {
         for (auto i : {1, 2, 3, 4, 5}) {
             entities.push_back(GetScene()->CreateEntity());
@@ -145,19 +126,7 @@ private:
         std::cout << "Clicked " << value << "\n";
     }
 
-
     InputManager* _inputManager { nullptr };
-
-    /*
-     * NON-RENDERING Objects
-     */
-
-    std::shared_ptr<Mesh> _mesh;
-    std::shared_ptr<Shader> _triangleShader { nullptr };
-    std::shared_ptr<UniformBuffer> _triangleUniformBuffer { nullptr };
-
-    std::shared_ptr<Texture> _triangleTexture1 { nullptr };
-    std::shared_ptr<Texture> _triangleTexture2 { nullptr };
 
     std::vector<Entity*> entities {};
 };
