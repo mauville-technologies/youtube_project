@@ -104,24 +104,40 @@ public:
             entities.push_back(GetScene()->CreateEntity());
         }
 
-
         auto mesh = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCube/DiffuseOnly/BasicCube.glb");
         entities[0]->AddComponent<MeshComponent>(std::move(mesh));
         auto& transform = entities[0]->AddComponent<TransformComponent>();
-//        transform._rotation = glm::rotate(transform._rotation, glm::vec3{0.f, 45.f, 0.0f});
+        transform.Scale *= 0.5f;
 
+        auto mesh2 = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCone.glb");
+        entities[1]->AddComponent<MeshComponent>(std::move(mesh2));
+        auto& transform2 = entities[1]->AddComponent<TransformComponent>();
+        transform2.Translation = glm::vec3(-2.5f, 0.0f, 0.0f);
+
+        auto mesh3 = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCube/DiffuseOnly/BasicCube.glb");
+        entities[2]->AddComponent<MeshComponent>(std::move(mesh3));
+        auto& transform3 = entities[2]->AddComponent<TransformComponent>();
+        transform3.Scale *= 0.5f;
+        transform3.Translation = glm::vec3(2.5f, 0.0f, 0.0f);
+
+        auto mesh4 = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCone.glb");
+        entities[3]->AddComponent<MeshComponent>(std::move(mesh4));
+        auto& transform4 = entities[3]->AddComponent<TransformComponent>();
+        transform4.Scale *= 0.5f;
+        transform4.Translation = glm::vec3(0.0, 1.5f, 0.0f);
     }
 
 protected:
     void Update(float deltaTime) override {
         auto& transform = entities[0]->GetComponent<TransformComponent>();
-        static float i = 0.01f;
 
-        i += 0.01f;
-
-        if (i > 360.f) i = 0.0f;
         glm::quat rotation = glm::quat(glm::vec3(0, 0.01, 0.0));
-        transform._rotation = transform._rotation * rotation;
+        transform.Rotation = transform.Rotation * rotation;
+
+        auto& transform2 = entities[3]->GetComponent<TransformComponent>();
+
+        glm::quat rotation2 = glm::quat(glm::vec3(0, -0.01, 0.0));
+        transform2.Rotation = transform2.Rotation * rotation2;
     }
 
 private:
