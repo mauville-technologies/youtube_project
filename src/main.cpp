@@ -106,18 +106,21 @@ public:
         auto& transform4 = entities[3]->AddComponent<TransformComponent>();
         transform4.Scale *= 0.5f;
         transform4.Translation = glm::vec3(0.0, 1.5f, 0.0f);
+        glm::quat rotation = glm::quat(glm::vec3(M_PI / 2, 0, 0.0));
+        transform4.Rotation = transform4.Rotation * rotation;
     }
 
 protected:
     void Update(float deltaTime) override {
+
         auto& transform = entities[0]->GetComponent<TransformComponent>();
 
-        glm::quat rotation = glm::quat(glm::vec3(0, 0.01, 0.0));
+        glm::quat rotation = glm::quat(glm::vec3(0, ((M_PI * 2) / 3) * deltaTime, 0.0));
         transform.Rotation = transform.Rotation * rotation;
 
         auto& transform2 = entities[3]->GetComponent<TransformComponent>();
 
-        glm::quat rotation2 = glm::quat(glm::vec3(0, -0.01, 0.0));
+        glm::quat rotation2 = glm::quat(glm::vec3(0, 0, ((M_PI * 2) / 3) * deltaTime));
         transform2.Rotation = transform2.Rotation * rotation2;
     }
 
