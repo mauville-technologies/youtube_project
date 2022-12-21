@@ -34,7 +34,7 @@ public:
             });
             _inputManager->MapInputToAction(InputKey::ControllerAxisLeftY, InputAction {
                     .ActionName = "moveForward",
-                    .Scale = 1.f
+                    .Scale = -1.f
             });
 
             _inputManager->MapInputToAction(InputKey::KeyW, InputAction {
@@ -110,7 +110,6 @@ public:
         camera = GetScene()->CreateEntity();
         auto& camTransform = camera->AddComponent<TransformComponent>();
         camTransform.SetPosition({0, 0, 5});
-        camTransform.RotateBy(180.f);
 
         auto& camComponent = camera->AddComponent<CameraComponent>();
         camComponent.SetActive(true);
