@@ -15,63 +15,7 @@ public:
     explicit YoutubeGame(std::string title) : Game(std::move(title)) {
         std::cout << "Hello, Youtube game!" << std::endl;
 
-        _inputManager = ServiceLocator::GetInputManager();
 
-        if (_inputManager) {
-            // Map inputs
-            _inputManager->MapInputToAction(InputKey::KeyA, InputAction {
-                .ActionName = "strafe",
-                .Scale = -1.f
-            });
-
-            _inputManager->MapInputToAction(InputKey::KeyD, InputAction {
-                    .ActionName = "strafe",
-                    .Scale = 1.f
-            });
-            _inputManager->MapInputToAction(InputKey::ControllerAxisLeftX, InputAction {
-                    .ActionName = "strafe",
-                    .Scale = 1.f
-            });
-            _inputManager->MapInputToAction(InputKey::ControllerAxisLeftY, InputAction {
-                    .ActionName = "moveForward",
-                    .Scale = -1.f
-            });
-
-            _inputManager->MapInputToAction(InputKey::KeyW, InputAction {
-                    .ActionName = "moveForward",
-                    .Scale = 1.f
-            });
-
-            _inputManager->MapInputToAction(InputKey::KeyS, InputAction {
-                    .ActionName = "moveForward",
-                    .Scale = -1.f
-            });
-
-            _inputManager->MapInputToAction(InputKey::MouseButtonLeft, InputAction {
-                .ActionName = "click",
-                .Scale = 1.f
-            });
-
-            _inputManager->MapInputToAction(InputKey::MouseMoveY, InputAction {
-                    .ActionName = "lookY",
-                    .Scale = -0.25f
-            });
-
-            _inputManager->MapInputToAction(InputKey::MouseMoveX, InputAction {
-                    .ActionName = "lookX",
-                    .Scale = -0.25f
-            });
-
-            _inputManager->RegisterActionCallback("click", InputManager::ActionCallback {
-               .Ref = "YoutubeGame",
-               .Func = [this](InputSource source, int sourceIndex, float value) {
-                   handleClick(value);
-                   return true;
-               }
-            });
-
-            SetupScene();
-        }
     }
 
     void OnExit() override {
@@ -117,6 +61,65 @@ public:
     }
 
 protected:
+    void Init() override {
+        _inputManager = ServiceLocator::GetInputManager();
+
+        if (_inputManager) {
+            // Map inputs
+            _inputManager->MapInputToAction(InputKey::KeyA, InputAction {
+                    .ActionName = "strafe",
+                    .Scale = -1.f
+            });
+
+            _inputManager->MapInputToAction(InputKey::KeyD, InputAction {
+                    .ActionName = "strafe",
+                    .Scale = 1.f
+            });
+            _inputManager->MapInputToAction(InputKey::ControllerAxisLeftX, InputAction {
+                    .ActionName = "strafe",
+                    .Scale = 1.f
+            });
+            _inputManager->MapInputToAction(InputKey::ControllerAxisLeftY, InputAction {
+                    .ActionName = "moveForward",
+                    .Scale = -1.f
+            });
+
+            _inputManager->MapInputToAction(InputKey::KeyW, InputAction {
+                    .ActionName = "moveForward",
+                    .Scale = 1.f
+            });
+
+            _inputManager->MapInputToAction(InputKey::KeyS, InputAction {
+                    .ActionName = "moveForward",
+                    .Scale = -1.f
+            });
+
+            _inputManager->MapInputToAction(InputKey::MouseButtonLeft, InputAction {
+                    .ActionName = "click",
+                    .Scale = 1.f
+            });
+
+            _inputManager->MapInputToAction(InputKey::MouseMoveY, InputAction {
+                    .ActionName = "lookY",
+                    .Scale = -0.25f
+            });
+
+            _inputManager->MapInputToAction(InputKey::MouseMoveX, InputAction {
+                    .ActionName = "lookX",
+                    .Scale = -0.25f
+            });
+
+            _inputManager->RegisterActionCallback("click", InputManager::ActionCallback {
+                    .Ref = "YoutubeGame",
+                    .Func = [this](InputSource source, int sourceIndex, float value) {
+                        handleClick(value);
+                        return true;
+                    }
+            });
+        }
+
+        SetupScene();
+    }
     void Update(float deltaTime) override {
 
         auto& transform = entities[0]->GetComponent<TransformComponent>();
