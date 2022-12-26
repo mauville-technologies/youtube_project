@@ -1,7 +1,5 @@
 #include <youtube_engine/platform/entry_point.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/matrix_access.hpp>
 
 #include <youtube_engine/core/entity.h>
 #include <youtube_engine/core/components/mesh_component.h>
@@ -66,6 +64,16 @@ protected:
 
         if (_inputManager) {
             // Map inputs
+            _inputManager->MapInputToAction(InputKey::KeyEscape, InputAction {
+                    .ActionName = "quit",
+                    .Scale = -1.f
+            });
+
+            _inputManager->MapInputToAction(InputKey::KeyF11, InputAction {
+                    .ActionName = "toggleFullscreen",
+                    .Scale = -1.f
+            });
+
             _inputManager->MapInputToAction(InputKey::KeyA, InputAction {
                     .ActionName = "strafe",
                     .Scale = -1.f
@@ -113,6 +121,41 @@ protected:
                     .Ref = "YoutubeGame",
                     .Func = [this](InputSource source, int sourceIndex, float value) {
                         handleClick(value);
+                        return true;
+                    }
+            });
+
+            _inputManager->RegisterActionCallback("quit", InputManager::ActionCallback {
+                    .Ref = "YoutubeGame",
+                    .Func = [this](InputSource source, int sourceIndex, float value) {
+                        Quit();
+                        return true;
+                    }
+            });
+
+            _inputManager->RegisterActionCallback("toggleFullscreen", InputManager::ActionCallback {
+                    .Ref = "YoutubeGame",
+                    .Func = [this](InputSource source, int sourceIndex, float value) {
+                        if (value == 0) return true;
+                        auto* configuration = ServiceLocator::GetConfiguration();
+                        auto& engineConfiguration = configuration->GetEngineConfiguration();
+
+                        switch (engineConfiguration.WinDisplayMode) {
+                            case WindowDisplayMode::Windowed:
+                                std::cout << "Going borderless";
+                                ServiceLocator::GetConfiguration()->SetEngineSetting(EngineSetting::WindowDisplayMode, WindowDisplayMode::BorderlessWindowed);
+                                break;
+                            case WindowDisplayMode::BorderlessWindowed:
+                                std::cout << "Going full";
+
+                                ServiceLocator::GetConfiguration()->SetEngineSetting(EngineSetting::WindowDisplayMode, WindowDisplayMode::Fullscreen);
+                                break;
+                            case WindowDisplayMode::Fullscreen:
+                                std::cout << "Going windowed";
+
+                                ServiceLocator::GetConfiguration()->SetEngineSetting(EngineSetting::WindowDisplayMode, WindowDisplayMode::Windowed);
+                                break;
+                        }
                         return true;
                     }
             });
