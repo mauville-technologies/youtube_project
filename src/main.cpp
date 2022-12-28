@@ -102,8 +102,8 @@ protected:
                     .Scale = -1.f
             });
 
-            _inputManager->MapInputToAction(InputKey::MouseButtonLeft, InputAction {
-                    .ActionName = "click",
+            _inputManager->MapInputToAction(InputKey::KeyF10, InputAction {
+                    .ActionName = "resetRenderer",
                     .Scale = 1.f
             });
 
@@ -117,10 +117,11 @@ protected:
                     .Scale = -0.25f
             });
 
-            _inputManager->RegisterActionCallback("click", InputManager::ActionCallback {
+            _inputManager->RegisterActionCallback("resetRenderer", InputManager::ActionCallback {
                     .Ref = "YoutubeGame",
                     .Func = [this](InputSource source, int sourceIndex, float value) {
-                        handleClick(value);
+                        if (value != 0)
+                            ResetRenderer();
                         return true;
                     }
             });
