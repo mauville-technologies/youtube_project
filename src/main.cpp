@@ -29,12 +29,12 @@ public:
         entities[0]->AddComponent<MeshComponent>(std::move(mesh));
         auto& transform = entities[0]->AddComponent<TransformComponent>();
         transform.SetScale(glm::vec3{1.f} * 0.5f);
-
+//
         auto mesh2 = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCone.glb");
         entities[1]->AddComponent<MeshComponent>(std::move(mesh2));
         auto& transform2 = entities[1]->AddComponent<TransformComponent>();
         transform2.SetPosition({-2.5f, 0.0f, 0.0f});
-
+//
         auto mesh3 = ServiceLocator::GetResourceManager()->Load<Mesh>("meshes/BasicCube/DiffuseOnly/BasicCube.glb");
         entities[2]->AddComponent<MeshComponent>(std::move(mesh3));
         auto& transform3 = entities[2]->AddComponent<TransformComponent>();
@@ -107,12 +107,8 @@ protected:
                     .Scale = 1.f
             });
 
-            _inputManager->MapInputToAction(InputKey::MouseMoveY, InputAction {
-                    .ActionName = "lookY",
-                    .Scale = -0.25f
-            });
 
-            _inputManager->MapInputToAction(InputKey::MouseMoveX, InputAction {
+            _inputManager->MapInputToAction(InputKey::ControllerAxisRightX, InputAction {
                     .ActionName = "lookX",
                     .Scale = -0.25f
             });
@@ -179,7 +175,7 @@ protected:
 
         auto scaledSpeed = movementSpeed * deltaTime;
         if (std::abs(moveForwardAmount) > 0.05f) {
-            cameraTransform.Translate(MoveDirection::Backward, moveForwardAmount * scaledSpeed);
+            cameraTransform.Translate(MoveDirection::Forward, moveForwardAmount * scaledSpeed);
         }
 
         auto strafeAmount = _inputManager->GetActionValue("strafe");
@@ -187,17 +183,18 @@ protected:
             cameraTransform.Translate(MoveDirection::Right, strafeAmount * scaledSpeed);
         }
 
+
         auto scaledLookSpeed = lookSpeed * deltaTime;
 
         auto lookXAmount = _inputManager->GetActionValue("lookX");
         if (std::abs(lookXAmount) > 0.05f && std::abs(lookXAmount) < 10.f) {
-            cameraTransform.RotateBy(lookXAmount * scaledLookSpeed, 0.f);
+            cameraTransform.RotateBy(0.f, lookXAmount * scaledLookSpeed);
         }
-
-        auto lookYAmount = _inputManager->GetActionValue("lookY");
-        if (std::abs(lookYAmount) > 0.05f && std::abs(lookYAmount) < 10.f) {
-            cameraTransform.RotateBy(0.f, lookYAmount * scaledLookSpeed, 0, true);
-        }
+//
+//        auto lookYAmount = _inputManager->GetActionValue("lookY");
+//        if (std::abs(lookYAmount) > 0.05f && std::abs(lookYAmount) < 10.f) {
+//            cameraTransform.RotateBy(0.f, lookYAmount * scaledLookSpeed, 0, true);
+//        }
     }
 
 private:
